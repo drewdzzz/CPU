@@ -16,7 +16,7 @@
 #ifdef DEBUG
     #define DEBUG_CODE(code) code;
 #else
-    #define DEBUG_PRINT(code)
+    #define DEBUG_CODE(code)
 #endif
 
 
@@ -49,21 +49,24 @@ int* cmd_into_buf ( const file_info &input_cmd)
     int command_code = 0;
     int value = 0;
 
-    #define DEF_CMD(name,num, code)                             \
-        else if (strcmp (#name, command_name) == 0)       \
+    #define DEF_CMD(name, num, code)                             \
+        else if (strcmp (#name, command_name) == 0)              \
         cmd_buf[2*i] = CMD_##name;
 
     for (long i = 0; i < input_cmd.number_of_strings; i++)
     {
         sscanf (input_cmd.stringpointer[i].b_ptr, " %s", command_name);
         if (false) ;
+
         #include "commands.hpp"
+
         else
         {
 			fprintf (stderr, "WRONG COMMAND!\n"
                                      "string: %ld\n", i);
             return nullptr;
         }
+        
         sscanf (input_cmd.stringpointer[i].b_ptr, "%*[^0-9]%d", &value);
         cmd_buf[2*i+1] = value;
         value = 0;

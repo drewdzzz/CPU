@@ -46,3 +46,28 @@ DEF_CMD(DIV, 5,
 	protected_act ( processor.pop(b) );
 	protected_act ( processor.push(a / b) );
 })
+
+DEF_CMD(SQRT, 9,
+{
+	int a = 0;
+	protected_act ( processor.pop (a) );
+	a = sqrt(a);
+	protected_act ( processor.push(a) );
+})
+
+DEF_CMD(IN, 10,
+{
+	int a = 0;
+	printf ("Print a value to PUSH: ");
+	scanf ("%d", &a);
+	protected_act ( processor.push(a) );
+	//printf ("\n");
+})
+
+DEF_CMD(OUT, 11,
+{
+	int a = 0;
+	protected_act ( processor.pop (a) );
+	printf ("Programm print: %d\n", a);
+})
+

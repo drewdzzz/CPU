@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "Stack.hpp"
 #include "enum_cmd.hpp"
+#include <math.h>
 
 #define $assert(cond, code)                                                             \
     if (!cond)                                                                          \
@@ -10,12 +12,12 @@
         code;                                                                           \
     }
 
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
     #define DEBUG_CODE(code) code;
 #else
-    #define DEBUG_PRINT(code)
+    #define DEBUG_CODE(code)
 #endif
 
 const char* COMMANDS = "code.bin";
@@ -61,6 +63,7 @@ bool CPU_work (long cmd_num, int* code)
     Stack_t processor = {};
     SET_NAME(processor);
     ERROR_CODE err_code = OK;
+
     #define DEF_CMD(name, num, code)        \
         case num: {code;break;}
 
