@@ -5,6 +5,8 @@
 #include "enum_cmd.hpp"
 #include <math.h>
 
+
+
 #define $assert(cond, code)                                                             \
     if (!cond)                                                                          \
     {                                                                                   \
@@ -19,6 +21,8 @@
 #else
     #define DEBUG_CODE(code)
 #endif
+
+int r[4] = {}; //registers
 
 const char* COMMANDS = "code.bin";
 
@@ -73,8 +77,9 @@ bool CPU_work (long cmd_num, int* code)
         {
             #include "commands.hpp"
             default: fprintf (stderr, "WRONG_CODE! \n"
-                                                  "Command number: %d", i);
-                          return false; break;
+                                      "Command number: %d", i);
+                     return false;
+                     break;
         }
 
         DEBUG_CODE (processor.print_stack())

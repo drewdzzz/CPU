@@ -4,14 +4,14 @@
 #include "enum_cmd.hpp"
 #include <assert.h>
 
-#define $assert(cond, code)                                                                                   \
-    if (!cond)                                                                                                               \
-    {                                                                                                                             \
+#define $assert(cond, code)                                                                  \
+    if (!cond)                                                                               \
+    {                                                                                        \
         fprintf (stderr, "something is not OK in %d string",  __LINE__);                     \
-        code;                                                                                                                 \
+        code;                                                                                \
     }
 
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
     #define DEBUG_CODE(code) code;
@@ -19,14 +19,16 @@
     #define DEBUG_CODE(code)
 #endif
 
-
 static const char* INPUT_FILE = "programm_commands.txt";
 static const char* OUTPUT_FILE = "code.bin";
-static const int MAX_COMMAND_SIZE = 6;
+static const int MAX_COMMAND_SIZE = 12;
+static const int MAX_REG_SIZE = 3;
 
 int* cmd_into_buf ( const file_info &command_file);
 
 bool write_cmd (int* cmd_buf, const file_info &input_cmd);
+
+int cmdcmp (char* string1, char* string2);
 
 int main ()
 {
@@ -48,28 +50,38 @@ int* cmd_into_buf ( const file_info &input_cmd)
     char command_name[MAX_COMMAND_SIZE] = "";
     int command_code = 0;
     int value = 0;
+    char reg[MAX_REG_SIZE] = "";
 
     #define DEF_CMD(name, num, code)                             \
-        else if (strcmp (#name, command_name) == 0)              \
+        else if (cmdcmp (#name, command_name) == 0)              \
         cmd_buf[2*i] = CMD_##name;
 
     for (long i = 0; i < input_cmd.number_of_strings; i++)
     {
         sscanf (input_cmd.stringpointer[i].b_ptr, " %s", command_name);
+        if (sscanf (input_cmd.stringpointer[i].b_ptr, "%*[^0-9]%d", &value) )
+        {
+            cmd_buf[2*i+1] = value;
+            value = 0;
+        }
+        else if (sscanf (input_cmd.stringpointer[i].b_ptr, "%*[A-Za-z] %s", reg))
+        {
+            strcat (command_name, " ");
+            strcat (command_name, reg);
+        }
+
+        DEBUG_CODE( printf ("Command [%d]: %s\n", i, command_name) )
+
         if (false) ;
 
         #include "commands.hpp"
 
         else
         {
-			fprintf (stderr, "WRONG COMMAND!\n"
-                                     "string: %ld\n", i);
+			fprintf (stderr, "\nWRONG COMMAND!\n"
+                             "String of wrong command in file: %ld\n\n", i+1);
             return nullptr;
         }
-        
-        sscanf (input_cmd.stringpointer[i].b_ptr, "%*[^0-9]%d", &value);
-        cmd_buf[2*i+1] = value;
-        value = 0;
     }
 
     #undef DEF_CMD
@@ -78,7 +90,7 @@ int* cmd_into_buf ( const file_info &input_cmd)
 
 bool write_cmd(int* cmd_buf, const file_info &input_cmd)
 {
-    assert(cmd_buf);
+    assert (cmd_buf);
 
     FILE* output_cmd = fopen (OUTPUT_FILE, "wb");
 
@@ -89,3 +101,27 @@ bool write_cmd(int* cmd_buf, const file_info &input_cmd)
     return 1;
 }
 
+int cmdcmp (char* string1, char* string2)
+{
+    assert (string1);
+    assert (string2);
+
+    int i = 0;
+    while (string1 [i] && string2 [i])
+    {
+        if ( (string1 [i] == '_' && string2 [i] == ' ') || (string1 [i] == ' ' && string2 [i] == '_') ) ;
+        else
+            if ( lowercase_letter (string1 [i]) != lowercase_letter (string2 [i]) )
+                return lowercase_letter (string1 [i]) - lowercase_letter (string2 [i]);
+        i++;
+    }
+    return lowercase_letter (string1 [i]) - lowercase_letter (string2 [i]);
+}
+
+
+
+
+bool test_cmdcmp()
+{
+
+}
