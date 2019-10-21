@@ -1,44 +1,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "Stack.hpp"
-#include "enum_cmd.hpp"
-
-
 
 #define $assert(cond, code)                                                             \
     if (!cond)                                                                          \
     {                                                                                   \
-        fprintf (stderr, "something is not OK in %d string",  __LINE__);                \
+        fprintf (stderr, "something is not OK in %d string\n",  __LINE__);                \
         code;                                                                           \
     }
 
-//#define DEBUG
-
-#ifdef DEBUG
-    #define DEBUG_CODE(code) code;
-#else
-    #define DEBUG_CODE(code)
-#endif
-
-int r[4] = {}; //registers
-
 const char* COMMANDS = "code.bin";
+const char* OUTPUT_FILE = "disasmed.txt";
 
 int* read_binary_code ( long &file_size );
 
-bool CPU_work (long cmd_num, int* code);
+void write_cmd (int* cmd, long cmd_num);
 
 int main ()
 {
     long cmd_num = 0;
     int* code = read_binary_code (cmd_num);
     cmd_num /= 4;
-
-    $assert(CPU_work (cmd_num, code), return 1)
-
+    write_cmd (code, cmd_num);
     return 0;
 }
+
 
 int* read_binary_code ( long &file_size )
 {
@@ -61,30 +47,31 @@ int* read_binary_code ( long &file_size )
     return code;
 }
 
-bool CPU_work (long cmd_num, int* code)
-{
-    Stack_t processor = {};
-    SET_NAME(processor);
-    ERROR_CODE err_code = OK;
 
-    #define DEF_CMD(name, num, argc, code)        \
-        case num: {code;break;}
+void write_cmd (int* cmd, long cmd_num)
+{
+    FILE* stream = fopen (OUTPUT_FILE, "w");
+
+    #define DEF_CMD(name, num, argc, code)                                       \
+        else if (cmd[i] == num)                                                  \
+        {                                                                        \
+            fprintf (stream, "%s ", #name);                                       \
+            if (argc == 1)                                                       \
+                fprintf (stream, "%d.%d\n", cmd[i+1] / 100, cmd[i+1] % 100);     \
+            else                                                                 \
+                fprintf (stream, "\n");                                          \
+         }
 
     for (int i = 0; i < cmd_num; i+=2)
     {
-        switch (code[i])
-        {
-            #include "commands.hpp"
-            default: fprintf (stderr, "WRONG_CODE! \n"
-                                      "Command number: %d", i);
-                     return false;
-                     break;
-        }
+        if (false) ;
 
-        DEBUG_CODE (processor.print_stack())
+        #include "commands.hpp"
+
+        else
+            fprintf (stderr, "\nWRONG COMMAND!\n"
+                             "String of wrong command in file: %d\n\n", i+1);
     }
-
-    end:
     #undef DEF_CMD
-    return true;
 }
+
