@@ -68,7 +68,7 @@ bool CPU_work (long cmd_num, int* code)
     SET_NAME(processor);
     ERROR_CODE err_code = OK;
 
-    #define DEF_CMD(name, num, code)        \
+    #define DEF_CMD(name, num, argc, code)        \
         case num: {code;break;}
 
     for (int i = 0; i < cmd_num; i+=2)
@@ -84,6 +84,8 @@ bool CPU_work (long cmd_num, int* code)
 
         DEBUG_CODE (processor.print_stack())
     }
+
+    end:
     #undef DEF_CMD
     return true;
 }

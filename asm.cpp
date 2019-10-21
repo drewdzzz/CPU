@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 #include "text_file_worker.hpp"
 #include "enum_cmd.hpp"
-#include <assert.h>
 
 #define $assert(cond, code)                                                                  \
     if (!cond)                                                                               \
@@ -49,28 +49,29 @@ int* cmd_into_buf ( const file_info &input_cmd)
 
     char command_name[MAX_COMMAND_SIZE] = "";
     int command_code = 0;
-    int value = 0;
+    float value = 0;
     char reg[MAX_REG_SIZE] = "";
 
-    #define DEF_CMD(name, num, code)                             \
+    #define DEF_CMD(name, num, argc, code)                       \
         else if (cmdcmp (#name, command_name) == 0)              \
         cmd_buf[2*i] = CMD_##name;
 
     for (long i = 0; i < input_cmd.number_of_strings; i++)
     {
+        if ( input_cmd.stringpointer[i].b_ptr[0] == '\0') break;
         sscanf (input_cmd.stringpointer[i].b_ptr, " %s", command_name);
-        if (sscanf (input_cmd.stringpointer[i].b_ptr, "%*[^0-9]%d", &value) )
+        if (sscanf (input_cmd.stringpointer[i].b_ptr, "%*[^0-9]%f", &value))
         {
-            cmd_buf[2*i+1] = value;
+            cmd_buf[2*i+1] = (int) value*100;
             value = 0;
         }
         else if (sscanf (input_cmd.stringpointer[i].b_ptr, "%*[A-Za-z] %s", reg))
         {
             strcat (command_name, " ");
             strcat (command_name, reg);
+            strcat (command_name, "\0");
         }
-
-        DEBUG_CODE( printf ("Command [%d]: %s\n", i, command_name) )
+        DEBUG_CODE ( printf ("Command [%d]: %s\n", i, command_name) )
 
         if (false) ;
 
@@ -116,12 +117,4 @@ int cmdcmp (char* string1, char* string2)
         i++;
     }
     return lowercase_letter (string1 [i]) - lowercase_letter (string2 [i]);
-}
-
-
-
-
-bool test_cmdcmp()
-{
-
 }

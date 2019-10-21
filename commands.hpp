@@ -7,12 +7,12 @@
         abort();                                  \
     }
 
-DEF_CMD (PUSH, 1,
+DEF_CMD (PUSH, 1, 1,
 {
-    protected_act ( processor.push(code[i+1]) );
+    protected_act ( processor.push(code[i+1]));
 })
 
-DEF_CMD (ADD, 2,
+DEF_CMD (ADD, 2, 0,
 {
 	int a = 0;
 	int b = 0;
@@ -21,7 +21,7 @@ DEF_CMD (ADD, 2,
 	protected_act ( processor.push (a + b) );
 })
 
-DEF_CMD (SUB, 3,
+DEF_CMD (SUB, 3, 0,
 {
 	int a = 0;
 	int b = 0;
@@ -30,86 +30,92 @@ DEF_CMD (SUB, 3,
 	protected_act ( processor.push(a - b) );
 })
 
-DEF_CMD(MUL, 4,
+DEF_CMD(MUL, 4, 0,
 {
 	int a = 0;
 	int b = 0;
 	protected_act ( processor.pop(a) );
 	protected_act ( processor.pop(b) );
-	protected_act ( processor.push(a * b));
+	protected_act ( processor.push( (a * b)/100) );
 })
 
-DEF_CMD(DIV, 5,
+DEF_CMD(DIV, 5, 0,
 {
 	int a = 0;
 	int b = 0;
 	protected_act ( processor.pop(a) );
 	protected_act ( processor.pop(b) );
-	protected_act ( processor.push(a / b) );
+	protected_act ( processor.push( (a / b)*100) );
 })
 
-DEF_CMD(SQRT, 9,
+DEF_CMD(SQRT, 9, 0,
 {
 	int a = 0;
+	float b = ((float)a)/100;
 	protected_act ( processor.pop (a) );
-	a = sqrt(a);
+	b /= 100;
+	b = sqrt(b);
+	a = b * 100;
 	protected_act ( processor.push(a) );
 })
 
-DEF_CMD(IN, 10,
+DEF_CMD(IN, 10, 0,
 {
-	int a = 0;
+	float a = 0;
 	printf ("Print a value to PUSH: ");
-	scanf ("%d", &a);
-	protected_act ( processor.push(a) );
+	scanf ("%f", &a);
+	protected_act ( processor.push(a*100) );
 	//printf ("\n");
 })
 
-DEF_CMD(OUT, 11,
+DEF_CMD(OUT, 11, 0,
 {
 	int a = 0;
 	protected_act ( processor.pop (a) );
-	printf ("Programm print: %d\n", a);
+	printf ("Programm print: %d.%d\n", a/100, a%100);
 })
 
-DEF_CMD (PUSH_AX, 100,
+DEF_CMD (PUSH_AX, 100, 0,
 {
     protected_act ( processor.push(r[0]) );
 })
 
-DEF_CMD (PUSH_BX, 101,
+DEF_CMD (PUSH_BX, 101, 0,
 {
     protected_act ( processor.push(r[1]) );
 })
 
-DEF_CMD (PUSH_CX, 102,
+DEF_CMD (PUSH_CX, 102, 0,
 {
     protected_act ( processor.push(r[2]) );
 })
 
-DEF_CMD (PUSH_DX, 103,
+DEF_CMD (PUSH_DX, 103, 0,
 {
     protected_act ( processor.push(r[3]) );
 })
 
-DEF_CMD (POP_AX, 200,
+DEF_CMD (POP_AX, 200, 0,
 {
     protected_act ( processor.pop(r[0]) );
 })
 
-DEF_CMD (POP_BX, 201,
+DEF_CMD (POP_BX, 201, 0,
 {
     protected_act ( processor.pop(r[1]) );
 })
 
-DEF_CMD (POP_CX, 202,
+DEF_CMD (POP_CX, 202, 0,
 {
     protected_act ( processor.pop(r[2]) );
 })
 
-DEF_CMD (POP_DX, 203,
+DEF_CMD (POP_DX, 203, 0,
 {
     protected_act ( processor.pop(r[3]) );
 })
 
-
+DEF_CMD (END, 255, 0,
+{
+    goto end;
+})
