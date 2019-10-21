@@ -75,17 +75,17 @@ DEF_CMD(OUT, 11, 0,
 	printf ("Programm print: %d.%d\n", a/100, a%100);
 })
 
-DEF_CMD (PUSH_AX, 100, 0,
+DEF_CMD (PUSH AX, 100, 0,
 {
     protected_act ( processor.push(r[0]) );
 })
 
-DEF_CMD (PUSH_BX, 101, 0,
+DEF_CMD (PUSH BX, 101, 0,
 {
     protected_act ( processor.push(r[1]) );
 })
 
-DEF_CMD (PUSH_CX, 102, 0,
+DEF_CMD (PUSH CX, 102, 0,
 {
     protected_act ( processor.push(r[2]) );
 })
@@ -95,22 +95,22 @@ DEF_CMD (PUSH_DX, 103, 0,
     protected_act ( processor.push(r[3]) );
 })
 
-DEF_CMD (POP_AX, 200, 0,
+DEF_CMD (POP AX, 200, 0,
 {
     protected_act ( processor.pop(r[0]) );
 })
 
-DEF_CMD (POP_BX, 201, 0,
+DEF_CMD (POP BX, 201, 0,
 {
     protected_act ( processor.pop(r[1]) );
 })
 
-DEF_CMD (POP_CX, 202, 0,
+DEF_CMD (POP CX, 202, 0,
 {
     protected_act ( processor.pop(r[2]) );
 })
 
-DEF_CMD (POP_DX, 203, 0,
+DEF_CMD (POP DX, 203, 0,
 {
     protected_act ( processor.pop(r[3]) );
 })

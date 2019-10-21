@@ -2,7 +2,6 @@
 #include <string.h>
 #include <assert.h>
 #include "text_file_worker.hpp"
-#include "enum_cmd.hpp"
 
 #define $assert(cond, code)                                                                  \
     if (!cond)                                                                               \
@@ -54,7 +53,7 @@ int* cmd_into_buf ( const file_info &input_cmd)
 
     #define DEF_CMD(name, num, argc, code)                       \
         else if (cmdcmp (#name, command_name) == 0)              \
-        cmd_buf[2*i] = CMD_##name;
+        cmd_buf[2*i] = num;
 
     for (long i = 0; i < input_cmd.number_of_strings; i++)
     {
