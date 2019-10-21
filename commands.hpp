@@ -65,7 +65,6 @@ DEF_CMD(IN, 10, 0,
 	printf ("Print a value to PUSH: ");
 	scanf ("%f", &a);
 	protected_act ( processor.push(a*100) );
-	//printf ("\n");
 })
 
 DEF_CMD(OUT, 11, 0,

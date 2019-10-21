@@ -59,7 +59,7 @@ int* cmd_into_buf ( const file_info &input_cmd)
     {
         if ( input_cmd.stringpointer[i].b_ptr[0] == '\0') break;
         sscanf (input_cmd.stringpointer[i].b_ptr, " %s", command_name);
-        if (sscanf (input_cmd.stringpointer[i].b_ptr, "%*[^0-9]%f", &value))
+        if (sscanf (input_cmd.stringpointer[i].b_ptr, "%*[^0-9-]%f", &value))
         {
             cmd_buf[2*i+1] = (int) value*100;
             value = 0;
