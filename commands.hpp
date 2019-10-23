@@ -114,6 +114,11 @@ DEF_CMD (POP DX, 203, 0,
     protected_act ( processor.pop(r[3]) );
 })
 
+DEF_CMD (JMP, 210, 1,
+{
+    i = code[i+1]/100 - 2;
+})
+
 DEF_CMD (END, 255, 0,
 {
     goto end;
