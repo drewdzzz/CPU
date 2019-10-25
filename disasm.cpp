@@ -37,7 +37,7 @@ int* read_binary_code ( long &file_size )
     fseek (stream, 0, SEEK_END);
     file_size = ftell (stream);
     fseek (stream, 0, SEEK_SET);
-    int* code = (int*) calloc (file_size,1);
+    int* code = (int*) calloc (file_size, 1);
     if (!code)
     {
         fprintf (stderr, "Memory for command buffer can't be allocated:(\n");
@@ -55,8 +55,13 @@ void write_cmd (int* cmd, long cmd_num)
     #define DEF_CMD(name, num, argc, code)                                       \
         else if (cmd[i] == num)                                                  \
         {                                                                        \
-            fprintf (stream, "%s ", #name);                                       \
-            if (argc == 1)                                                       \
+            fprintf (stream, "%s ", #name);                                      \
+            if (argc == 2)                                                       \
+            {                                                                    \
+                fprintf (stream, "Register: %cX\n", cmd[i+1]/100 + 'A');         \
+                                                                                 \
+            }                                                                    \
+            else if (argc == 1)                                                  \
                 fprintf (stream, "%d.%d\n", cmd[i+1] / 100, cmd[i+1] % 100);     \
             else                                                                 \
                 fprintf (stream, "\n");                                          \

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <ctype.h>
 #include "text_file_worker.hpp"
 
 #define $assert(cond, code)                                                                  \
@@ -22,12 +23,22 @@ static const char* INPUT_FILE = "programm_commands.txt";
 static const char* OUTPUT_FILE = "code.bin";
 static const int MAX_COMMAND_SIZE = 12;
 static const int MAX_REG_SIZE = 3;
-
+static const int MAX_LABEL_LENGTH = 10;
+static const int MAX_LABEL_NUM = 10;
 int* cmd_into_buf ( const file_info &command_file);
 
 bool write_cmd (int* cmd_buf, const file_info &input_cmd);
 
 int cmdcmp (char* string1, char* string2);
+
+struct label
+{
+    char name[MAX_LABEL_LENGTH] = "";
+    long address = 0;
+};
+
+label labels [MAX_LABEL_NUM] = {};
+long label_counter = 0;
 
 int main ()
 {
@@ -53,10 +64,11 @@ int* cmd_into_buf ( const file_info &input_cmd)
 
     #define DEF_CMD(name, num, argc, code)                       \
         else if (cmdcmp (#name, command_name) == 0)              \
-        cmd_buf[2*i] = num;
+        cmd_buf[2*i] = num;                                      \
 
     for (long i = 0; i < input_cmd.number_of_strings; i++)
     {
+        reg[0] = 0;
         if ( input_cmd.stringpointer[i].b_ptr[0] == '\0') break;
         sscanf (input_cmd.stringpointer[i].b_ptr, " %s", command_name);
         if (sscanf (input_cmd.stringpointer[i].b_ptr, "%*[^0-9-]%f", &value))
@@ -69,6 +81,7 @@ int* cmd_into_buf ( const file_info &input_cmd)
             strcat (command_name, " ");
             strcat (command_name, reg);
             strcat (command_name, "\0");
+            cmd_buf[2*i+1] = (tolower (reg[0]) - 'a')*100;
         }
         DEBUG_CODE ( printf ("Command [%d]: %s\n", i, command_name) )
 
@@ -109,7 +122,11 @@ int cmdcmp (char* string1, char* string2)
     int i = 0;
     while (string1 [i] && string2 [i])
     {
-        if ( (string1 [i] == '_' && string2 [i] == ' ') || (string1 [i] == ' ' && string2 [i] == '_') ) ;
+        if  (string1 [i] == '_')
+        {
+            i++;
+            continue;
+        }
         else
             if ( lowercase_letter (string1 [i]) != lowercase_letter (string2 [i]) )
                 return lowercase_letter (string1 [i]) - lowercase_letter (string2 [i]);
