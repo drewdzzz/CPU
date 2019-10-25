@@ -81,7 +81,7 @@ int* cmd_into_buf ( const file_info &input_cmd)
         if ( islabel (command_name) )
         {
             strcpy (LABELS [label_counter].name, command_name);
-            LABELS [label_counter++].address = 2*(i+1);
+            LABELS [label_counter++].address = 2*(i+1)*100;
             continue;
         }
         if (sscanf (input_cmd.stringpointer[i].b_ptr, "%*[^0-9-]%f", &value))
@@ -147,7 +147,7 @@ bool islabel (char* string)
         ;
     if (string[i-1] == ':')
     {
-        string[i-1] = 0;
+        string[i-1] = '\0';
         return true;
     }
     return false;
@@ -177,7 +177,7 @@ int cmdcmp (char* string1, char* string2)
 bool label_search (char* string, int &label_num)
 {
     for (int i = 0; i < label_counter; i++)
-        if ( strcmp (LABELS[label_counter].name, string) == 0 )
+        if ( strcmp (LABELS[i].name, string) == 0 )
         {
             label_num = i;
             return true;

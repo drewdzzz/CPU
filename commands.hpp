@@ -85,14 +85,9 @@ DEF_CMD (POP _X, 200, 2,
 })
 
 
-DEF_CMD (JMP_abs, 210, 1,
+DEF_CMD (JMP, 210, 1,
 {
     i = code[i+1]/100 - 2;
-})
-
-DEF_CMD (JMP, 211, 1,
-{
-	i = code[i+1]/100 - 2;
 })
 
 DEF_CMD (END, 255, 0,
