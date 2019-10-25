@@ -71,11 +71,12 @@ bool CPU_work (long cmd_num, int* code)
 
     for (int i = 0; i < cmd_num; i+=2)
     {
+        if (code [i] == 0) continue;
         switch (code[i])
         {
             #include "commands.hpp"
             default: fprintf (stderr, "WRONG_CODE! \n"
-                                      "Command number: %d", i);
+                                      "Command number: %d\n", i);
                      return false;
                      break;
         }
