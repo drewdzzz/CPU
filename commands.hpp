@@ -27,10 +27,10 @@ DEF_CMD (SUB, 3, 0,
 	int b = 0;
 	protected_act ( processor.pop(a) );
 	protected_act ( processor.pop(b) );
-	protected_act ( processor.push(a - b) );
+	protected_act ( processor.push(b - a) );
 })
 
-DEF_CMD(MUL, 4, 0,
+DEF_CMD (MUL, 4, 0,
 {
 	int a = 0;
 	int b = 0;
@@ -39,27 +39,28 @@ DEF_CMD(MUL, 4, 0,
 	protected_act ( processor.push( (a * b)/100) );
 })
 
-DEF_CMD(DIV, 5, 0,
+DEF_CMD (DIV, 5, 0,
 {
 	int a = 0;
 	int b = 0;
+	float c = 0;
 	protected_act ( processor.pop(a) );
 	protected_act ( processor.pop(b) );
-	protected_act ( processor.push( (a / b)*100) );
+	c = (float) b / a;
+	protected_act ( processor.push( c * 100 ) );
 })
 
-DEF_CMD(SQRT, 9, 0,
+DEF_CMD (SQRT, 9, 0,
 {
 	int a = 0;
-	float b = ((float)a)/100;
 	protected_act ( processor.pop (a) );
-	b /= 100;
+	float b = a/100;
 	b = sqrt(b);
 	a = b * 100;
 	protected_act ( processor.push(a) );
 })
 
-DEF_CMD(IN, 10, 0,
+DEF_CMD (IN, 10, 0,
 {
 	float a = 0;
 	printf ("Print a value to PUSH: ");
@@ -67,11 +68,16 @@ DEF_CMD(IN, 10, 0,
 	protected_act ( processor.push(a*100) );
 })
 
-DEF_CMD(OUT, 11, 0,
+DEF_CMD (OUT, 11, 0,
 {
 	int a = 0;
 	protected_act ( processor.pop (a) );
-	printf ("Programm print: %d.%d\n", a/100, a%100);
+	printf ("Programm print: " );
+	if (a < 0) printf ("-");
+    a = abs (a);
+    printf ("%d", a/100);
+    if (a%100) printf (".%d", a%100);
+    printf ("\n");
 })
 
 DEF_CMD (PUSH _X, 100, 2,
@@ -87,6 +93,66 @@ DEF_CMD (POP _X, 200, 2,
 
 DEF_CMD (JMP, 210, 1,
 {
+    i = code[i+1]/100 - 2;
+})
+
+DEF_CMD (JA, 220, 1,
+{
+    int a = 0;
+	int b = 0;
+	protected_act ( processor.pop(a) );
+	protected_act ( processor.pop(b) );
+	if (a < b)
+    i = code[i+1]/100 - 2;
+})
+
+DEF_CMD (JAE, 221, 1,
+{
+    int a = 0;
+	int b = 0;
+	protected_act ( processor.pop(a) );
+	protected_act ( processor.pop(b) );
+	if (a <= b)
+    i = code[i+1]/100 - 2;
+})
+
+DEF_CMD (JB, 222, 1,
+{
+    int a = 0;
+	int b = 0;
+	protected_act ( processor.pop(a) );
+	protected_act ( processor.pop(b) );
+	if (a > b)
+    i = code[i+1]/100 - 2;
+})
+
+DEF_CMD (JBE, 223, 1,
+{
+    int a = 0;
+	int b = 0;
+	protected_act ( processor.pop(a) );
+	protected_act ( processor.pop(b) );
+	if (a >= b)
+    i = code[i+1]/100 - 2;
+})
+
+DEF_CMD (JE, 224, 1,
+{
+    int a = 0;
+	int b = 0;
+	protected_act ( processor.pop(a) );
+	protected_act ( processor.pop(b) );
+	if (a == b)
+    i = code[i+1]/100 - 2;
+})
+
+DEF_CMD (JNE, 225, 1,
+{
+    int a = 0;
+	int b = 0;
+	protected_act ( processor.pop(a) );
+	protected_act ( processor.pop(b) );
+	if (a != b)
     i = code[i+1]/100 - 2;
 })
 

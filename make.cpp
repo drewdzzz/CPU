@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#define COMPILE
+//#define COMPILE
 
 #ifdef COMPILE
     #define MAKE(asm,cpu)       \
