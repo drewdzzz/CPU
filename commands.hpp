@@ -156,6 +156,17 @@ DEF_CMD (JNE, 225, 1,
     i = code[i+1]/100 - 2;
 })
 
+DEF_CMD (CALL, 230, 1,
+{
+    protected_act ( call_stack.push(i) );
+    i = code[i+1]/100 - 2;
+})
+
+DEF_CMD (RET, 231, 1,
+{
+    protected_act ( call_stack.pop (i) );
+})
+
 DEF_CMD (END, 255, 0,
 {
     goto end;

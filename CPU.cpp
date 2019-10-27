@@ -63,6 +63,7 @@ int* read_binary_code ( long &file_size )
 bool CPU_work (long cmd_num, int* code)
 {
     Stack_t processor = {};
+    Stack_t call_stack = {};
     SET_NAME(processor);
     ERROR_CODE err_code = OK;
 
