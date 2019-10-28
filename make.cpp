@@ -5,7 +5,8 @@
 #ifdef COMPILE
     #define MAKE(asm,cpu)       \
         system ("mingw32-g++.exe " #asm ".cpp" " -o " #asm ".exe");   \
-        system (#cpu ".cpp");   \
+        system ("mingw32-g++.exe " #cpu ".cpp" " -o " #cpu ".exe");   \
+        system ("cls");         \
         system (#asm ".exe");   \
         system (#cpu ".exe");
 #else

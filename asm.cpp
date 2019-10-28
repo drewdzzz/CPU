@@ -21,10 +21,11 @@
 
 static const char* INPUT_FILE = "programm_commands.txt";
 static const char* OUTPUT_FILE = "code.bin";
-static const int MAX_COMMAND_SIZE = 12;
-static const int MAX_REG_SIZE = 3;
-static const int MAX_LABEL_LENGTH = 10;
-static const int MAX_LABEL_NUM = 10;
+static const int MAX_COMMAND_SIZE = 15;
+static const int MAX_REG_SIZE = 15;
+static const int MAX_LABEL_LENGTH = 15;
+static const int MAX_LABEL_NUM = 40;
+
 int* cmd_into_buf ( const file_info &command_file);
 
 bool write_cmd (int* cmd_buf, const file_info &input_cmd);
@@ -34,8 +35,6 @@ int cmdcmp (char* string1, char* string2);
 bool islabel (char* string);
 
 bool label_search (char* string, int &label_num);
-
-//bool isRAM (char* string);
 
 struct label
 {
@@ -82,6 +81,7 @@ int* cmd_into_buf ( const file_info &input_cmd)
         sscanf (input_cmd.stringpointer[cmd_counter].b_ptr, " %s", command_name);
         if ( islabel (command_name) )
         {
+            DEBUG_CODE ( printf ("Label detected: %s\n", command_name) )
             strcpy (LABELS [label_counter].name, command_name);
             LABELS [label_counter++].address = 2*(cmd_counter+1)*100;
             continue;
@@ -102,16 +102,20 @@ int* cmd_into_buf ( const file_info &input_cmd)
             }
             else if (label_search (reg, label_num))
             {
+                DEBUG_CODE ( printf ("Label set: %s\n", reg) )
+
                 cmd_buf[2*cmd_counter+1] = LABELS [label_num].address;
                 label_num = 0;
             }
             else
             {
+                DEBUG_CODE ( printf ("Label wasn't found: %s\n", reg) )
+
                 cmd_buf[2*cmd_counter+1] = -1;
             }
 
         }
-        DEBUG_CODE ( printf ("Command [%d]: %s\n", cmd_counter, command_name) )
+        DEBUG_CODE ( printf ("Command [%d]: %s\n", cmd_counter + 1, command_name) )
 
         if (false) ;
 

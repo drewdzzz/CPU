@@ -172,6 +172,16 @@ DEF_CMD (PUSHV _X, 133, 2,
 	protected_act ( processor.push(a) );
 })
 
+/*DEF_CMD (DRAW, 140, 0,
+{
+    HANDLE hwnd = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hwnd, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+    for ( int ver = 0; ver < VIDEO_V; ver++)
+        for ( int hor = 0; hor < VIDEO_H; hor++)
+            ;
+
+}) */
+
 DEF_CMD (JMP, 210, 1,
 {
     cmd_counter = code[cmd_counter+1]/100 - 2;

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <windows.h>
 #include "Stack.hpp"
 
 
@@ -20,8 +21,8 @@
     #define DEBUG_CODE(code)
 #endif
 
-const int VIDEO_V = 32;
-const int VIDEO_H = 64;
+const int VIDEO_H = 16;
+const int VIDEO_V = 16;
 const int RAM_SIZE = 1024*1024;
 const int VRAM_SIZE = VIDEO_H * VIDEO_V;
 
