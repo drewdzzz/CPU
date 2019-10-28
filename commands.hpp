@@ -3,13 +3,27 @@
     if (err_code != 0)                            \
     {                                             \
         processor.diagnostic (err_code);          \
-        printf("Number of wrong string:%d", i/2+1); \
+        printf("Number of wrong string:%d", cmd_counter/2+1); \
         abort();                                  \
     }
 
+#define RAM_correct(a)                           \
+        if (a < 0 || a >= RAM_SIZE)                \
+        {                                          \
+            printf("You are out of RAM in string:%d", cmd_counter/2+1); \
+            abort();                                     \
+        }
+
+#define VRAM_correct(a)                            \
+        if (a < 0 || a >= VRAM_SIZE)                      \
+        {                                                  \
+            printf("You are out of VRAM in string:%d", cmd_counter/2+1); \
+            abort();                                     \
+        }                                                \
+
 DEF_CMD (PUSH, 1, 1,
 {
-    protected_act ( processor.push(code[i+1]) );
+    protected_act ( processor.push(code[cmd_counter+1]) );
 })
 
 DEF_CMD (ADD, 2, 0,
@@ -82,18 +96,85 @@ DEF_CMD (OUT, 11, 0,
 
 DEF_CMD (PUSH _X, 100, 2,
 {
-    protected_act ( processor.push(r [ code [i+1]/100 ] ) );
+    protected_act ( processor.push(r [ code [cmd_counter+1]/100 ] ) );
 })
 
-DEF_CMD (POP _X, 200, 2,
+DEF_CMD (POP _X, 110, 2,
 {
-    protected_act ( processor.pop (r [ code [i+1]/100 ] ) );
+    protected_act ( processor.pop (r [ code [cmd_counter+1]/100 ] ) );
 })
 
+DEF_CMD (POPR, 120, 2,
+{
+	int a = 0;
+	protected_act ( processor.pop(a) );
+    int b = code [ cmd_counter + 1 ] / 100;
+	RAM_correct (b)
+	RAM [ b ] = a;
+})
+
+DEF_CMD (POPR _X, 121, 2,
+{
+	int a = 0;
+	protected_act ( processor.pop(a) );
+	int b = r [ code [ cmd_counter + 1 ] ] / 100;
+	RAM_correct (b)
+	RAM [ b ] = a;
+})
+
+DEF_CMD (PUSHR, 122, 2,
+{
+    int b = code [ cmd_counter + 1 ] / 100;
+	RAM_correct (b)
+	int a = RAM [ b ];
+	protected_act ( processor.push(a) );
+})
+
+DEF_CMD (PUSHR _X, 123, 2,
+{
+    int b = r [ code [ cmd_counter + 1 ] ] / 100;
+	RAM_correct (b)
+	int a = RAM [ b ];
+	protected_act ( processor.push(a) );
+})
+
+DEF_CMD (POPV, 130, 2,
+{
+	int a = 0;
+	protected_act ( processor.pop(a) );
+	int b = code [ cmd_counter + 1 ] / 100;
+	VRAM_correct (b)
+	VRAM [ b ] = a;
+})
+
+DEF_CMD (POPV _X, 131, 2,
+{
+	int a = 0;
+	protected_act ( processor.pop(a) );
+	int b = r [ code [ cmd_counter + 1 ] ] / 100;
+	VRAM_correct (b)
+	VRAM [ b ] = a;
+})
+
+DEF_CMD (PUSHV, 132, 2,
+{
+    int b = code [ cmd_counter + 1 ] / 100;
+	VRAM_correct (b)
+	int a = VRAM [ b ];
+	protected_act ( processor.push(a) );
+})
+
+DEF_CMD (PUSHV _X, 133, 2,
+{
+    int b = r [ code [ cmd_counter + 1 ] ] / 100;
+	VRAM_correct (b)
+	int a = VRAM [ b ];
+	protected_act ( processor.push(a) );
+})
 
 DEF_CMD (JMP, 210, 1,
 {
-    i = code[i+1]/100 - 2;
+    cmd_counter = code[cmd_counter+1]/100 - 2;
 })
 
 DEF_CMD (JA, 220, 1,
@@ -103,7 +184,7 @@ DEF_CMD (JA, 220, 1,
 	protected_act ( processor.pop(a) );
 	protected_act ( processor.pop(b) );
 	if (a < b)
-    i = code[i+1]/100 - 2;
+    cmd_counter = code[cmd_counter+1]/100 - 2;
 })
 
 DEF_CMD (JAE, 221, 1,
@@ -113,7 +194,7 @@ DEF_CMD (JAE, 221, 1,
 	protected_act ( processor.pop(a) );
 	protected_act ( processor.pop(b) );
 	if (a <= b)
-    i = code[i+1]/100 - 2;
+    cmd_counter = code[cmd_counter+1]/100 - 2;
 })
 
 DEF_CMD (JB, 222, 1,
@@ -123,7 +204,7 @@ DEF_CMD (JB, 222, 1,
 	protected_act ( processor.pop(a) );
 	protected_act ( processor.pop(b) );
 	if (a > b)
-    i = code[i+1]/100 - 2;
+    cmd_counter = code[cmd_counter+1]/100 - 2;
 })
 
 DEF_CMD (JBE, 223, 1,
@@ -133,7 +214,7 @@ DEF_CMD (JBE, 223, 1,
 	protected_act ( processor.pop(a) );
 	protected_act ( processor.pop(b) );
 	if (a >= b)
-    i = code[i+1]/100 - 2;
+    cmd_counter = code[cmd_counter+1]/100 - 2;
 })
 
 DEF_CMD (JE, 224, 1,
@@ -143,7 +224,7 @@ DEF_CMD (JE, 224, 1,
 	protected_act ( processor.pop(a) );
 	protected_act ( processor.pop(b) );
 	if (a == b)
-    i = code[i+1]/100 - 2;
+    cmd_counter = code[cmd_counter+1]/100 - 2;
 })
 
 DEF_CMD (JNE, 225, 1,
@@ -153,18 +234,18 @@ DEF_CMD (JNE, 225, 1,
 	protected_act ( processor.pop(a) );
 	protected_act ( processor.pop(b) );
 	if (a != b)
-    i = code[i+1]/100 - 2;
+    cmd_counter = code[cmd_counter+1]/100 - 2;
 })
 
 DEF_CMD (CALL, 230, 1,
 {
-    protected_act ( call_stack.push(i) );
-    i = code[i+1]/100 - 2;
+    protected_act ( call_stack.push(cmd_counter) );
+    cmd_counter = code[cmd_counter+1]/100 - 2;
 })
 
 DEF_CMD (RET, 231, 1,
 {
-    protected_act ( call_stack.pop (i) );
+    protected_act ( call_stack.pop (cmd_counter) );
 })
 
 DEF_CMD (END, 255, 0,

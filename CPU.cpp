@@ -20,9 +20,17 @@
     #define DEBUG_CODE(code)
 #endif
 
+const int VIDEO_V = 32;
+const int VIDEO_H = 64;
+const int RAM_SIZE = 1024*1024;
+const int VRAM_SIZE = VIDEO_H * VIDEO_V;
+
 int r[4] = {}; //registers
 
 const char* COMMANDS = "code.bin";
+
+int RAM [RAM_SIZE] = {};
+int VRAM [VRAM_SIZE] = {};
 
 int* read_binary_code ( long &file_size );
 
@@ -70,14 +78,14 @@ bool CPU_work (long cmd_num, int* code)
     #define DEF_CMD(name, num, argc, code)        \
         case num: {code;break;}
 
-    for (int i = 0; i < cmd_num; i+=2)
+    for (int cmd_counter = 0; cmd_counter < cmd_num; cmd_counter+=2)
     {
-        if (code [i] == 0) continue;
-        switch (code[i])
+        if (code [cmd_counter] == 0) continue;
+        switch (code[cmd_counter])
         {
             #include "commands.hpp"
             default: fprintf (stderr, "WRONG_CODE! \n"
-                                      "Command number: %d\n", i);
+                                      "Command number: %d\n", cmd_counter);
                      return false;
                      break;
         }

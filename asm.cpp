@@ -35,6 +35,8 @@ bool islabel (char* string);
 
 bool label_search (char* string, int &label_num);
 
+//bool isRAM (char* string);
+
 struct label
 {
     char name[MAX_LABEL_LENGTH] = "";
@@ -71,45 +73,45 @@ int* cmd_into_buf ( const file_info &input_cmd)
 
     #define DEF_CMD(name, num, argc, code)                       \
         else if (cmdcmp (#name, command_name) == 0)              \
-        cmd_buf[2*i] = num;
+        cmd_buf[2*cmd_counter] = num;
 
-    for (long i = 0; i < input_cmd.number_of_strings; i++)
+    for (long cmd_counter = 0; cmd_counter < input_cmd.number_of_strings; cmd_counter++)
     {
         reg[0] = 0;
-        if ( input_cmd.stringpointer[i].b_ptr[0] == '\0') continue;
-        sscanf (input_cmd.stringpointer[i].b_ptr, " %s", command_name);
+        if ( input_cmd.stringpointer[cmd_counter].b_ptr[0] == '\0') continue;
+        sscanf (input_cmd.stringpointer[cmd_counter].b_ptr, " %s", command_name);
         if ( islabel (command_name) )
         {
             strcpy (LABELS [label_counter].name, command_name);
-            LABELS [label_counter++].address = 2*(i+1)*100;
+            LABELS [label_counter++].address = 2*(cmd_counter+1)*100;
             continue;
         }
-        if (sscanf (input_cmd.stringpointer[i].b_ptr, "%*[^0-9-]%f", &value))
+        if (sscanf (input_cmd.stringpointer[cmd_counter].b_ptr, "%*[^0-9-]%f", &value))
         {
-            cmd_buf[2*i+1] = (int) value*100;
+            cmd_buf[2*cmd_counter+1] = (int) value*100;
             value = 0;
         }
-        else if (sscanf (input_cmd.stringpointer[i].b_ptr, "%*[A-Za-z] %s", reg))
+        else if (sscanf (input_cmd.stringpointer[cmd_counter].b_ptr, "%*[A-Za-z] %s", reg))
         {
             if (tolower (reg[1]) == 'x' && reg[2] == 0)
             {
                 strcat (command_name, " ");
                 strcat (command_name, reg);
                 strcat (command_name, "\0");
-                cmd_buf[2*i+1] = (tolower (reg[0]) - 'a')*100;
+                cmd_buf[2*cmd_counter+1] = (tolower (reg[0]) - 'a')*100;
             }
             else if (label_search (reg, label_num))
             {
-                cmd_buf[2*i+1] = LABELS [label_num].address;
+                cmd_buf[2*cmd_counter+1] = LABELS [label_num].address;
                 label_num = 0;
             }
             else
             {
-                cmd_buf[2*i+1] = -1;
+                cmd_buf[2*cmd_counter+1] = -1;
             }
 
         }
-        DEBUG_CODE ( printf ("Command [%d]: %s\n", i, command_name) )
+        DEBUG_CODE ( printf ("Command [%d]: %s\n", cmd_counter, command_name) )
 
         if (false) ;
 
@@ -118,7 +120,7 @@ int* cmd_into_buf ( const file_info &input_cmd)
         else
         {
 			fprintf (stderr, "\nWRONG COMMAND!\n"
-                             "String of wrong command in file: %ld\n\n", i+1);
+                             "String of wrong command in file: %ld\n\n", cmd_counter+1);
             return nullptr;
         }
     }
@@ -153,25 +155,46 @@ bool islabel (char* string)
     return false;
 }
 
+/*bool isRAM (char* &string)
+{
+    int i = 0;
+    if (string [i] != '[') return false;
+    while (string [i])
+        i++;
+    i--;
+    if (string [i] != ']') return false;
+    return true;
+} */
+
 int cmdcmp (char* string1, char* string2)
 {
     assert (string1);
     assert (string2);
 
     int i = 0;
-    while (string1 [i] && string2 [i])
+    int j = 0;
+    while (string1 [i] && string2 [j])
     {
-        if  (string1 [i] == '_')
+        /*if (string1 [i] == '[')
         {
             i++;
+            j++;
+            while (string2 [j] != ']' || string2 [j] != 0) j++;
+            if (string1[i] == string2[j]) return 0;
+        }*/
+        if (string1 [i] == '_')
+        {
+            i++;
+            j++;
             continue;
         }
         else
-            if ( lowercase_letter (string1 [i]) != lowercase_letter (string2 [i]) )
-                return lowercase_letter (string1 [i]) - lowercase_letter (string2 [i]);
+            if ( lowercase_letter (string1 [i]) != lowercase_letter (string2 [j]) )
+                return lowercase_letter (string1 [i]) - lowercase_letter (string2 [j]);
         i++;
+        j++;
     }
-    return lowercase_letter (string1 [i]) - lowercase_letter (string2 [i]);
+    return lowercase_letter (string1 [i]) - lowercase_letter (string2 [j]);
 }
 
 bool label_search (char* string, int &label_num)
