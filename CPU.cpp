@@ -1,31 +1,26 @@
+///@file
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <windows.h>
 #include "Stack.hpp"
 
-
-
-#define $assert(cond, code)                                                             \
-    if (!cond)                                                                          \
-    {                                                                                   \
-        fprintf (stderr, "something is not OK in %d string",  __LINE__);                \
-        code;                                                                           \
-    }
-
-//#define DEBUG
-
-#ifdef DEBUG
-    #define DEBUG_CODE(code) code;
-#else
-    #define DEBUG_CODE(code)
-#endif
-
+///@brief Horizontal size of screen
 const int VIDEO_H = 64;
+
+///@brief Vertical size of screen
 const int VIDEO_V = 16;
+
+///@brief Size of RAM
 const int RAM_SIZE = 1024*1024;
+
+///@brief Size of Video memory (equals Horizontal_size_of_screen * Vertical_size_of_screen)
 const int VRAM_SIZE = VIDEO_H * VIDEO_V;
 
+///@brief Number of registers
+const int NUMBER_OF_REGISTERS = 4;
+
+///@brief Enum with colour codes for graphics
 enum ConsoleColor
 {
         Black         = 0,
@@ -46,18 +41,44 @@ enum ConsoleColor
         White         = 15
 };
 
+///@brief Console window descriptor
 HANDLE hConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
-int r[4] = {}; //registers
+///@brief Array of registers
+int r [NUMBER_OF_REGISTERS] = {};
 
+///@brief Path to file with CPU code
 const char* COMMANDS = "code.bin";
 
+///@brief RAM
 int RAM [RAM_SIZE] = {};
+
+///@brief Video Memory
 int VRAM [VRAM_SIZE] = {};
 
+///@brief Reads binary code
+///@param [out] Size of buffer with code
 int* read_binary_code ( long &file_size );
 
+///@brief The main function. CPU's working proccess!!
 bool CPU_work (long cmd_num, int* code);
+
+
+///@brief Define DEBUG to execute debug code
+//#define DEBUG
+
+#ifdef DEBUG
+    #define DEBUG_CODE(code) code;
+#else
+    #define DEBUG_CODE(code)
+#endif
+
+#define $assert(cond, code)                                                             \
+    if (!cond)                                                                          \
+    {                                                                                   \
+        fprintf (stderr, "something is not OK in %d string",  __LINE__);                \
+        code;                                                                           \
+    }
 
 int main ()
 {

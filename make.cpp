@@ -1,6 +1,8 @@
+/// @file Compiler + executor
 #include <stdlib.h>
 
-//#define COMPILE
+///@brief Define COMPILE if want to Compile before execution
+#define COMPILE
 
 #ifdef COMPILE
     #define MAKE(asm,cpu)       \

@@ -1,16 +1,61 @@
+/// @file
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
 #include <ctype.h>
 #include "text_file_worker.hpp"
 
-#define $assert(cond, code)                                                                  \
-    if (!cond)                                                                               \
-    {                                                                                        \
-        fprintf (stderr, "something is not OK in %d string",  __LINE__);                     \
-        code;                                                                                \
-    }
+///@brief Path to file with ASM code
+static const char* INPUT_FILE = "DRE_graphic.txt";
 
+///@brief Path to file for writing binary code
+static const char* OUTPUT_FILE = "code.bin";
+
+///@brief Max size of command (so uses for labels)
+static const int MAX_COMMAND_SIZE = 15;
+
+///@brief Max size of register (so uses for labels)
+static const int MAX_REG_SIZE = 15;
+
+///@brief Max size of label
+static const int MAX_LABEL_LENGTH = 15;
+
+///@brief Max number of labels
+static const int MAX_LABEL_NUM = 100;
+
+///@brief Translates ASM code to int buffer containing binary code
+int* cmd_into_buf ( const file_info &command_file);
+
+///@brief Writes buffer with binary code to the file
+bool write_cmd (int* cmd_buf, const file_info &input_cmd);
+
+///@brief Special string comporator for command determinating
+int cmdcmp (char* string1, char* string2);
+
+///@brief Determinates labels by ':'
+bool islabel (char* string);
+
+///@brief Searching for label's address (uses in jumps)
+bool label_search (char* string, int &label_num);
+
+///@brief Label-struct
+struct label
+{
+///@brief Name of label
+    char name[MAX_LABEL_LENGTH] = "";
+
+///@brief Address which label points to
+    long address = 0;
+};
+
+///@brief Global array of labels
+label LABELS [MAX_LABEL_NUM] = {};
+
+///@brief Counter of labels
+long label_counter = 0;
+
+
+///@brief Define DEBUG to execute debug code
 //#define DEBUG
 
 #ifdef DEBUG
@@ -19,32 +64,14 @@
     #define DEBUG_CODE(code)
 #endif
 
-static const char* INPUT_FILE = "Fibbonachi.txt";
-static const char* OUTPUT_FILE = "code.bin";
-static const int MAX_COMMAND_SIZE = 15;
-static const int MAX_REG_SIZE = 15;
-static const int MAX_LABEL_LENGTH = 15;
-static const int MAX_LABEL_NUM = 100;
 
-int* cmd_into_buf ( const file_info &command_file);
+#define $assert(cond, code)                                                                  \
+    if (!cond)                                                                               \
+    {                                                                                        \
+        fprintf (stderr, "something is not OK in %d string",  __LINE__);                     \
+        code;                                                                                \
+    }
 
-bool write_cmd (int* cmd_buf, const file_info &input_cmd);
-
-int cmdcmp (char* string1, char* string2);
-
-bool islabel (char* string);
-
-bool label_search (char* string, int &label_num);
-
-struct label
-{
-    char name[MAX_LABEL_LENGTH] = "";
-    long address = 0;
-};
-
-label LABELS [MAX_LABEL_NUM] = {};
-
-long label_counter = 0;
 
 int main ()
 {
@@ -160,17 +187,6 @@ bool islabel (char* string)
     return false;
 }
 
-/*bool isRAM (char* &string)
-{
-    int i = 0;
-    if (string [i] != '[') return false;
-    while (string [i])
-        i++;
-    i--;
-    if (string [i] != ']') return false;
-    return true;
-} */
-
 int cmdcmp (char* string1, char* string2)
 {
     assert (string1);
@@ -180,13 +196,6 @@ int cmdcmp (char* string1, char* string2)
     int j = 0;
     while (string1 [i] && string2 [j])
     {
-        /*if (string1 [i] == '[')
-        {
-            i++;
-            j++;
-            while (string2 [j] != ']' || string2 [j] != 0) j++;
-            if (string1[i] == string2[j]) return 0;
-        }*/
         if (string1 [i] == '_')
         {
             i++;
