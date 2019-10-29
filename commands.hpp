@@ -94,17 +94,17 @@ DEF_CMD (OUT, 11, 0,
     printf ("\n");
 })
 
-DEF_CMD (PUSH _X, 100, 2,
+DEF_CMD (PUSH _X, 100, 1,
 {
     protected_act ( processor.push(r [ code [cmd_counter+1]/100 ] ) );
 })
 
-DEF_CMD (POP _X, 110, 2,
+DEF_CMD (POP _X, 110, 1,
 {
     protected_act ( processor.pop (r [ code [cmd_counter+1]/100 ] ) );
 })
 
-DEF_CMD (POPR, 120, 2,
+DEF_CMD (POPR, 120, 1,
 {
 	int a = 0;
 	protected_act ( processor.pop(a) );
@@ -113,7 +113,7 @@ DEF_CMD (POPR, 120, 2,
 	RAM [ b ] = a;
 })
 
-DEF_CMD (POPR _X, 121, 2,
+DEF_CMD (POPR _X, 121, 1,
 {
 	int a = 0;
 	protected_act ( processor.pop(a) );
@@ -122,7 +122,7 @@ DEF_CMD (POPR _X, 121, 2,
 	RAM [ b ] = a;
 })
 
-DEF_CMD (PUSHR, 122, 2,
+DEF_CMD (PUSHR, 122, 1,
 {
     int b = code [ cmd_counter + 1 ] / 100;
 	RAM_correct (b)
@@ -130,7 +130,7 @@ DEF_CMD (PUSHR, 122, 2,
 	protected_act ( processor.push(a) );
 })
 
-DEF_CMD (PUSHR _X, 123, 2,
+DEF_CMD (PUSHR _X, 123, 1,
 {
     int b = r [ code [ cmd_counter + 1 ] ] / 100;
 	RAM_correct (b)
@@ -138,7 +138,7 @@ DEF_CMD (PUSHR _X, 123, 2,
 	protected_act ( processor.push(a) );
 })
 
-DEF_CMD (POPV, 130, 2,
+DEF_CMD (POPV, 130, 1,
 {
 	int a = 0;
 	protected_act ( processor.pop(a) );
@@ -147,16 +147,16 @@ DEF_CMD (POPV, 130, 2,
 	VRAM [ b ] = a;
 })
 
-DEF_CMD (POPV _X, 131, 2,
+DEF_CMD (POPV _X, 131, 1,
 {
 	int a = 0;
 	protected_act ( processor.pop(a) );
-	int b = r [ code [ cmd_counter + 1 ] ] / 100;
+	int b = r [ code [ cmd_counter + 1 ] / 100 ] /100;
 	VRAM_correct (b)
 	VRAM [ b ] = a;
 })
 
-DEF_CMD (PUSHV, 132, 2,
+DEF_CMD (PUSHV, 132, 1,
 {
     int b = code [ cmd_counter + 1 ] / 100;
 	VRAM_correct (b)
@@ -164,23 +164,30 @@ DEF_CMD (PUSHV, 132, 2,
 	protected_act ( processor.push(a) );
 })
 
-DEF_CMD (PUSHV _X, 133, 2,
+DEF_CMD (PUSHV _X, 133, 1,
 {
-    int b = r [ code [ cmd_counter + 1 ] ] / 100;
+    int b = r [ code [ cmd_counter + 1 ] / 100] /100;
 	VRAM_correct (b)
 	int a = VRAM [ b ];
 	protected_act ( processor.push(a) );
 })
 
-/*DEF_CMD (DRAW, 140, 0,
+DEF_CMD (DRAW, 140, 0,
 {
-    HANDLE hwnd = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hwnd, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-    for ( int ver = 0; ver < VIDEO_V; ver++)
-        for ( int hor = 0; hor < VIDEO_H; hor++)
-            ;
+    //printf ("\n");
+    for (int i = 0; i < VIDEO_V; i++)
+    {
+        for (int j = 0; j < VIDEO_H; j++)
+        {
+            SetConsoleTextAttribute(hConsoleHandle, (VRAM[i*VIDEO_H + j] / 100)<<4);
+            printf (" ");
+        }
+            SetConsoleTextAttribute(hConsoleHandle, 0<<4);
+            printf ("\n");
+    }
+    SetConsoleTextAttribute(hConsoleHandle, 15);
 
-}) */
+})
 
 DEF_CMD (JMP, 210, 1,
 {

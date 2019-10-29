@@ -19,12 +19,12 @@
     #define DEBUG_CODE(code)
 #endif
 
-static const char* INPUT_FILE = "programm_commands.txt";
+static const char* INPUT_FILE = "Fibbonachi.txt";
 static const char* OUTPUT_FILE = "code.bin";
 static const int MAX_COMMAND_SIZE = 15;
 static const int MAX_REG_SIZE = 15;
 static const int MAX_LABEL_LENGTH = 15;
-static const int MAX_LABEL_NUM = 40;
+static const int MAX_LABEL_NUM = 100;
 
 int* cmd_into_buf ( const file_info &command_file);
 
@@ -79,6 +79,7 @@ int* cmd_into_buf ( const file_info &input_cmd)
         reg[0] = 0;
         if ( input_cmd.stringpointer[cmd_counter].b_ptr[0] == '\0') continue;
         sscanf (input_cmd.stringpointer[cmd_counter].b_ptr, " %s", command_name);
+        if (command_name[0] == ';') continue;
         if ( islabel (command_name) )
         {
             DEBUG_CODE ( printf ("Label detected: %s\n", command_name) )
@@ -86,12 +87,12 @@ int* cmd_into_buf ( const file_info &input_cmd)
             LABELS [label_counter++].address = 2*(cmd_counter+1)*100;
             continue;
         }
-        if (sscanf (input_cmd.stringpointer[cmd_counter].b_ptr, "%*[^0-9-]%f", &value))
+        if (sscanf (input_cmd.stringpointer[cmd_counter].b_ptr, " %*[^0-9-]%f", &value))
         {
             cmd_buf[2*cmd_counter+1] = (int) value*100;
             value = 0;
         }
-        else if (sscanf (input_cmd.stringpointer[cmd_counter].b_ptr, "%*[A-Za-z] %s", reg))
+        else if (sscanf (input_cmd.stringpointer[cmd_counter].b_ptr, " %*[A-Za-z] %s", reg))
         {
             if (tolower (reg[1]) == 'x' && reg[2] == 0)
             {

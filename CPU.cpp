@@ -21,10 +21,32 @@
     #define DEBUG_CODE(code)
 #endif
 
-const int VIDEO_H = 16;
+const int VIDEO_H = 64;
 const int VIDEO_V = 16;
 const int RAM_SIZE = 1024*1024;
 const int VRAM_SIZE = VIDEO_H * VIDEO_V;
+
+enum ConsoleColor
+{
+        Black         = 0,
+        Blue          = 1,
+        Green         = 2,
+        Cyan          = 3,
+        Red           = 4,
+        Magenta       = 5,
+        Brown         = 6,
+        LightGray     = 7,
+        DarkGray      = 8,
+        LightBlue     = 9,
+        LightGreen    = 10,
+        LightCyan     = 11,
+        LightRed      = 12,
+        LightMagenta  = 13,
+        Yellow        = 14,
+        White         = 15
+};
+
+HANDLE hConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
 int r[4] = {}; //registers
 
